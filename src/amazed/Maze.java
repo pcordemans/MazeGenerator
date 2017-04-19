@@ -3,6 +3,10 @@ package amazed;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Maze generator class
+ *
+ */
 public class Maze {	
 	private char grid [][];
 	private int size;
@@ -13,7 +17,10 @@ public class Maze {
 	private int outerWallPosition;
 	private RandomList<Coordinate> listOfWalls = new RandomList<Coordinate>();
 	
-	
+	/**
+	 * Generates a maze given a size
+	 * @param size determines the number of free cells in the starting grid precondition: > 0
+	 */
 	public Maze(int size){
 		this.size = size;
 		gridSize = size * 2 + 1;
@@ -25,11 +32,17 @@ public class Maze {
 		makeEntryAndExit();
 	}
 	
+	/**
+	 * Makes an entry and exit next to a corridor in the maze
+	 */
 	private void makeEntryAndExit(){
 		grid[validEntryPoint()][0] = corridor;
 		grid[validExitPoint()][outerWallPosition] = corridor;
 	}
 	
+	/**
+	 * @return a random position in the left wall next to a corridor
+	 */
 	private int validEntryPoint(){
 		int randomRow; 
 		do randomRow = randomPosition();
@@ -37,6 +50,9 @@ public class Maze {
 		return randomRow;
 	}
 	
+	/**
+	 * @return a random position in the right wall next to a corridor
+	 */
 	private int validExitPoint(){
 		int randomRow; 
 		do randomRow = randomPosition();
@@ -44,6 +60,9 @@ public class Maze {
 		return randomRow;
 	}
 	
+	/**
+	 * Uses the Prim Jarnik algorithm to construct a minimum spanning tree given a grid of cells which are surrounded by walls
+	 */
 	private void constructMaze(){
 		while(!listOfWalls.isEmpty()){
 			Coordinate position = listOfWalls.removeRandom();
@@ -52,6 +71,12 @@ public class Maze {
 		}
 	}
 	
+	/**
+	 * Determines if the cell next to the wall is an unvisited cell, and visit it if it is unvisited 
+	 * @param row of the wall
+	 * @param col of the wall
+	 * @return true if the wall should be collapsed, false if not
+	 */
 	private boolean visitCell(int row, int col){
 		if(grid[row + 1][col] == unvisited){
 			grid[row + 1][col] = corridor;
@@ -76,10 +101,17 @@ public class Maze {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @return a random position in the grid, excluding outer walls
+	 */
 	private int randomPosition(){
 		return ThreadLocalRandom.current().nextInt(0, size) * 2 + 1;
 	}
 	
+	/**
+	 * Picks the seed of the Prim Jarnik algorithm and visits it
+	 */
 	private void pickStartCell(){
 		int row = randomPosition();
 		int col = randomPosition();
@@ -87,6 +119,11 @@ public class Maze {
 		addSurroundingWalls(row, col);		
 	}
 	
+	/**
+	 * Checks if the walls of an unvisited cell should be added to the list of walls
+	 * @param row of the unvisited cell
+	 * @param col of the unvisited cell
+	 */
 	private void addSurroundingWalls(int row, int col){
 		if(row > 1 && grid[row - 2][col] == unvisited && grid[row-1][col] == wall) listOfWalls.add(new Coordinate(row-1, col));
 		if(row < gridSize - 2 && grid[row + 2][col] == unvisited && grid[row+1][col] == wall) listOfWalls.add(new Coordinate(row+1, col));
@@ -94,6 +131,9 @@ public class Maze {
 		if(col < gridSize - 2 && grid[row][col+2] == unvisited && grid[row][col+1] == wall) listOfWalls.add(new Coordinate(row, col+1));
 	}
 	
+	/**
+	 * Initialises a grid of walled cells with solid outer walls
+	 */
 	private void initialise(){
 		for(int row = 0; row < gridSize; row++){
 			for(int col = 0; col < gridSize; col++){
@@ -107,6 +147,9 @@ public class Maze {
 		}
 	}
 	
+	/**
+	 * Prints the maze 'X' represents a wall
+	 */
 	public void print(){
 		for(int i = 0; i < gridSize; i++){
 			System.out.println(grid[i]);
@@ -114,6 +157,10 @@ public class Maze {
 		System.out.println("");
 	}
 	
+	/**
+	 * Data class to represent a coordinate in the maze
+	 *
+	 */
 	private class Coordinate{
 		private final int xcor, ycor;
 		
