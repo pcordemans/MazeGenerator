@@ -66,7 +66,7 @@ public class Maze {
 	private void constructMaze(){
 		while(!listOfWalls.isEmpty()){
 			Coordinate position = listOfWalls.removeRandom();
-			boolean newCellFound = visitCell(position.row(), position.col());
+			boolean newCellFound = checkCell(position.row(), position.col());
 			if(newCellFound)grid[position.row()][position.col()] = corridor;			
 		}
 	}
@@ -77,25 +77,21 @@ public class Maze {
 	 * @param col of the wall
 	 * @return true if the wall should be collapsed, false if not
 	 */
-	private boolean visitCell(int row, int col){
+	private boolean checkCell(int row, int col){
 		if(grid[row + 1][col] == unvisited){
-			grid[row + 1][col] = corridor;
-			addSurroundingWalls(row + 1, col);
+			visitCell(row + 1, col);
 			return true;
 		}
 		if(grid[row - 1][col] == unvisited){
-			grid[row - 1][col] = corridor;
-			addSurroundingWalls(row - 1, col);
+			visitCell(row - 1, col);
 			return true;
 		}
 		if(grid[row][col + 1] == unvisited){
-			grid[row][col + 1] = corridor;
-			addSurroundingWalls(row, col + 1);
+			visitCell(row, col + 1);
 			return true;
 		}
 		if(grid[row][col - 1] == unvisited){
-			grid[row][col - 1] = corridor;
-			addSurroundingWalls(row, col - 1);
+			visitCell(row, col - 1);
 			return true;
 		}
 		return false;
@@ -110,13 +106,22 @@ public class Maze {
 	}
 	
 	/**
+	 * Visits a cell, adding its surrounding walls to the list of walls if applicable
+	 * @param row of the cell
+	 * @param col of the cell
+	 */
+	private void visitCell(int row, int col){
+		grid[row][col] = corridor;
+		addSurroundingWalls(row, col);
+	}
+	
+	/**
 	 * Picks the seed of the Prim Jarnik algorithm and visits it
 	 */
 	private void pickStartCell(){
 		int row = randomPosition();
 		int col = randomPosition();
-		grid[row][col] = corridor;
-		addSurroundingWalls(row, col);		
+		visitCell(row, col);		
 	}
 	
 	/**
