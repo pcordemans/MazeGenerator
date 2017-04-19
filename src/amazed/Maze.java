@@ -26,7 +26,22 @@ public class Maze {
 	}
 	
 	private void makeEntryAndExit(){
-		int randomRow = randomPosition();
+		grid[validEntryPoint()][0] = corridor;
+		grid[validExitPoint()][outerWallPosition] = corridor;
+	}
+	
+	private int validEntryPoint(){
+		int randomRow; 
+		do randomRow = randomPosition();
+		while(grid[randomRow][1] != corridor);
+		return randomRow;
+	}
+	
+	private int validExitPoint(){
+		int randomRow; 
+		do randomRow = randomPosition();
+		while(grid[randomRow][outerWallPosition-1] != corridor);
+		return randomRow;
 	}
 	
 	private void constructMaze(){
