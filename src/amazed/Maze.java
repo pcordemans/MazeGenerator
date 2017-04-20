@@ -1,5 +1,12 @@
 package amazed;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -163,33 +170,65 @@ public class Maze {
 	}
 	
 	/**
+	 * 
+	 * @return the maze as a list of strings, each element representing a row of the maze
+	 */
+	public List<String> toListOfStrings(){
+		ArrayList<String> list = new ArrayList<String>();
+		for(int i = 0; i < gridSize; i++){
+			list.add(new String(grid[i]));
+		}
+		return list;
+		
+	}
+	
+	/**
 	 * Data class to represent a coordinate in the maze
 	 *
 	 */
 	private class Coordinate{
-		private final int xcor, ycor;
+		private final int row, col;
 		
-		public Coordinate(int x, int y){
-			xcor = x;
-			ycor = y;
+		public Coordinate(int row, int col){
+			this.row = row;
+			this.col = col;
 		}
 		
 		public int row(){
-			return xcor;
+			return row;
 		}
 		
 		public int col(){
-			return ycor;
+			return col;
 		}
 	}
 	
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Enter an integer to determine the size of the maze");
-		int size = scanner.nextInt();
-		scanner.close();
+		
+		String entered = scanner.nextLine(); 
+		int size = Integer.parseInt(entered);
+		
 		System.out.println("Generating maze...");
 		Maze maze = new Maze(size);
 		maze.print();
+		
+		List<String> lines = maze.toListOfStrings();
+		String filename = "maze.txt";
+		System.out.println("Save to file: enter filename or use default [" + filename + "]");
+		
+		entered = scanner.nextLine();
+		scanner.close();
+		
+		if(!entered.equals("")) filename = entered;
+		
+		Path file = Paths.get(filename);
+		try {
+			Files.write(file, lines, Charset.forName("UTF-8"));
+			System.out.println(filename + " saved");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
